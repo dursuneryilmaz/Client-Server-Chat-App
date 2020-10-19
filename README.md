@@ -1,2 +1,2 @@
 # Client-Server-Chat-App
-Java client-server chat application 
+Client-server multi-threaded chat application using sockets and mysql
