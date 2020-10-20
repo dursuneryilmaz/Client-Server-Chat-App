@@ -209,7 +209,7 @@ public class frmHome extends javax.swing.JFrame {
 
     private void btnJoinChatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJoinChatActionPerformed
         Server server = lstAllServers.getSelectedValue();
-        new frmChat(user, server).setVisible(true);
+        new frmChat(user, server);
     }//GEN-LAST:event_btnJoinChatActionPerformed
 
     /**
