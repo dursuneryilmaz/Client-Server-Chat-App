@@ -8,7 +8,6 @@ package duchat.app;
 import duchat.entity.User;
 import duchat.service.UserService;
 import duchat.utility.Utility;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 
