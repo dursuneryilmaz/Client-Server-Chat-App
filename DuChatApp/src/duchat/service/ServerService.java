@@ -5,9 +5,7 @@
  */
 package duchat.service;
 
-import duchat.dal.MessageDal;
 import duchat.dal.ServerDal;
-import duchat.entity.Message;
 import duchat.entity.Server;
 import duchat.entity.User;
 import java.sql.ResultSet;
@@ -22,16 +20,18 @@ import java.util.logging.Logger;
  */
 public class ServerService {
 
-    public static boolean create(Server server) {
-        return ServerDal.create(server);
+    final ServerDal serverDal = new ServerDal();
+
+    public boolean create(Server server) {
+        return serverDal.create(server);
     }
 
-    public static boolean delete(Server server) {
-        return ServerDal.delete(server);
+    public boolean delete(Server server) {
+        return serverDal.delete(server);
     }
 
     public ArrayList<Server> getServerList(User user) {
-        ResultSet resultSet = ServerDal.getServerList(user);
+        ResultSet resultSet = serverDal.getServerList(user);
         ArrayList<Server> servers = new ArrayList<Server>();
         try {
             // transfer datas from resultset to java objects and store them in a datastructure
@@ -50,5 +50,14 @@ public class ServerService {
             Logger.getLogger(MessageService.class.getName()).log(Level.SEVERE, null, ex);
         }
         return servers;
+    }
+
+    public Server getServerByCode(String code) {
+        return serverDal.getServerByCode(code);
+
+    }
+
+    public boolean login(User user, Server server) {
+        return serverDal.login(user, server);
     }
 }
