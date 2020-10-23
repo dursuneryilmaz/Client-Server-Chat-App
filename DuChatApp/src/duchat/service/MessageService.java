@@ -20,12 +20,14 @@ import java.util.logging.Logger;
  */
 public class MessageService {
 
-    public static boolean sendMessage(Message message) {
-        return MessageDal.sendMessage(message);
+    final MessageDal messageDal = new MessageDal();
+
+    public boolean sendMessage(Message message) {
+        return messageDal.sendMessage(message);
     }
 
-    public static ArrayList<Message> getMessages(User user) {
-        ResultSet resultSet = MessageDal.getMessages(user);
+    public ArrayList<Message> getMessages(User user) {
+        ResultSet resultSet = messageDal.getMessages(user);
         ArrayList<Message> messages = new ArrayList<Message>();
         try {
             // transfer datas from resultset to java objects and store them in a datastructure
