@@ -11,7 +11,7 @@ package duchat.entity;
  */
 public class Server {
 
-    private int id;
+    private int id = -1;
     private String name;
     private String ip;
     private int port;
@@ -25,6 +25,12 @@ public class Server {
         this.port = port;
         this.owner = owner;
         this.code = code;
+    }
+
+    public Server(String name, int port, int owner) {
+        this.name = name;
+        this.port = port;
+        this.owner = owner;
     }
 
     public int getId() {
