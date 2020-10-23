@@ -7,6 +7,7 @@ package duchat.app;
 
 import duchat.entity.Server;
 import duchat.entity.User;
+import duchat.service.ServerService;
 import javax.swing.DefaultListModel;
 
 /**
@@ -29,6 +30,8 @@ public class frmHome extends javax.swing.JFrame {
 
     frmHome(User user) {
         initComponents();
+        this.user = user;
+        System.out.println(this.user.getUsername());
         modelAllServer = new DefaultListModel();
         modelOffServer = new DefaultListModel();
         modelOnServer = new DefaultListModel();
@@ -71,9 +74,11 @@ public class frmHome extends javax.swing.JFrame {
         btnDelete = new javax.swing.JButton();
         btnStop = new javax.swing.JButton();
         jSeparator3 = new javax.swing.JSeparator();
+        btnCreateServer = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Du Chat App");
+        setResizable(false);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -113,6 +118,11 @@ public class frmHome extends javax.swing.JFrame {
         btnLeaveServer.setText("Leave Server");
 
         btnFindServer.setText("Find Server");
+        btnFindServer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFindServerActionPerformed(evt);
+            }
+        });
 
         btnStart.setText("Start");
 
@@ -121,6 +131,13 @@ public class frmHome extends javax.swing.JFrame {
         btnStop.setText("Stop");
 
         jSeparator3.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        btnCreateServer.setText("Create Server");
+        btnCreateServer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCreateServerActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -141,16 +158,18 @@ public class frmHome extends javax.swing.JFrame {
                 .addGap(20, 20, 20)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnDelete))
-                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnCreateServer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
@@ -183,10 +202,13 @@ public class frmHome extends javax.swing.JFrame {
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(btnLeaveServer)
                                     .addComponent(btnFindServer)))
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(btnStart)
-                                .addComponent(btnStop)
-                                .addComponent(btnDelete)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(btnStart)
+                                    .addComponent(btnStop)
+                                    .addComponent(btnDelete))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnCreateServer)))
                         .addContainerGap(20, Short.MAX_VALUE))
                     .addComponent(jSeparator3)))
         );
@@ -208,15 +230,27 @@ public class frmHome extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnJoinChatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJoinChatActionPerformed
+        System.out.println(this.user.getUsername());
         Server server = lstAllServers.getSelectedValue();
-        new frmChat(user, server);
+        frmChat frmChat = new frmChat(this.user, server);
     }//GEN-LAST:event_btnJoinChatActionPerformed
+
+    private void btnCreateServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateServerActionPerformed
+        // TODO add your handling code here:
+        new frmServerCreate(this.user, new ServerService()).setVisible(true);
+
+    }//GEN-LAST:event_btnCreateServerActionPerformed
+
+    private void btnFindServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindServerActionPerformed
+        new frmServerLogin(this.user, new ServerService()).setVisible(true);
+    }//GEN-LAST:event_btnFindServerActionPerformed
 
     /**
      * @param args the command line arguments
      */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCreateServer;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnFindServer;
     private javax.swing.JButton btnJoinChat;
