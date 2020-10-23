@@ -23,7 +23,7 @@ public class MessageDal {
     public static final DbHelper DB_HELPER = new DbHelper();
     static Connection connectionString;
 
-    public static boolean sendMessage(Message message) {
+    public  boolean sendMessage(Message message) {
         try {
             connectionString = DB_HELPER.getConnection();
         } catch (SQLException ex) {
@@ -50,7 +50,7 @@ public class MessageDal {
         return success;
     }
 
-    public static ResultSet getMessages(User user) {
+    public  ResultSet getMessages(User user) {
         try {
             connectionString = DB_HELPER.getConnection();
         } catch (SQLException ex) {
