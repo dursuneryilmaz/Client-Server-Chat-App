@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,7 +25,7 @@ public class ServerDal {
     public static final DbHelper DB_HELPER = new DbHelper();
     static Connection connectionString;
 
-    public boolean create(Server server) {
+    public boolean createServer(Server server) {
         try {
             connectionString = DB_HELPER.getConnection();
         } catch (SQLException ex) {
@@ -53,7 +54,7 @@ public class ServerDal {
         return success;
     }
 
-    public boolean delete(Server server) {
+    public boolean deleteServer(Server server) {
         try {
             connectionString = DB_HELPER.getConnection();
         } catch (SQLException ex) {
@@ -79,25 +80,100 @@ public class ServerDal {
         return success;
     }
 
-    public ResultSet getServerList(User user) {
+    public ArrayList<Server> getConnectedServerList(User user) {
         try {
             connectionString = DB_HELPER.getConnection();
         } catch (SQLException ex) {
             Logger.getLogger(MessageDal.class.getName()).log(Level.SEVERE, null, ex);
         }
-        ResultSet rsx = null;
+        ArrayList<Server> servers = new ArrayList<Server>();
+
         String query = "SELECT * FROM server WHERE id IN(SELECT server_id FROM serveruser WHERE user_id=?)";
         try {
             PreparedStatement statement = connectionString.prepareStatement(query);
             statement.setInt(1, user.getId());
             ResultSet rs = statement.executeQuery();
-            return rs;
+
+            while (rs.next()) {
+                servers.add(new Server(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("ip"),
+                        rs.getInt("port"),
+                        rs.getInt("owner"),
+                        rs.getString("code"))
+                );
+            }
+
+            return servers;
         } catch (SQLException ex) {
             Logger.getLogger(MessageDal.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex.getMessage());
         }
+        return servers;
+    }
 
-        return rsx;
+    public ArrayList<Server> getOwnedServerList(User user) {
+        try {
+            connectionString = DB_HELPER.getConnection();
+        } catch (SQLException ex) {
+            Logger.getLogger(MessageDal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        ArrayList<Server> servers = new ArrayList<Server>();
+
+        String query = "SELECT * FROM server WHERE owner=?";
+        try {
+            PreparedStatement statement = connectionString.prepareStatement(query);
+            statement.setInt(1, user.getId());
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                servers.add(new Server(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("ip"),
+                        rs.getInt("port"),
+                        rs.getInt("owner"),
+                        rs.getString("code"))
+                );
+            }
+
+            return servers;
+        } catch (SQLException ex) {
+            Logger.getLogger(MessageDal.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
+        }
+        return servers;
+    }
+
+    public Server getServerById(int id) {
+        try {
+            connectionString = DB_HELPER.getConnection();
+        } catch (SQLException ex) {
+            Logger.getLogger(MessageDal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        Server server = null;
+
+        String query = "SELECT * FROM server WHERE id=?";
+        try {
+            PreparedStatement statement = connectionString.prepareStatement(query);
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                server = new Server(rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("ip"),
+                        rs.getInt("port"),
+                        rs.getInt("owner"),
+                        rs.getString("code"));
+                return server;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(MessageDal.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
+        }
+        return server;
     }
 
     public Server getServerByCode(String code) {
@@ -130,7 +206,7 @@ public class ServerDal {
         return server;
     }
 
-    public boolean login(User user, Server server) {
+    public boolean connectServer(User user, Server server) {
         try {
             connectionString = DB_HELPER.getConnection();
         } catch (SQLException ex) {
