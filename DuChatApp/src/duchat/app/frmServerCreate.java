@@ -134,7 +134,7 @@ public class frmServerCreate extends javax.swing.JFrame {
             String ip = inetAddress.getHostAddress();
 
             server.setIp(ip);
-            boolean create = serverService.create(server);
+            boolean create = serverService.createServer(server);
             if (create) {
                 JOptionPane.showMessageDialog(rootPane, "Server Created!");
                 this.dispose();

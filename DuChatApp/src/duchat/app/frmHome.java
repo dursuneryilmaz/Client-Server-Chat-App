@@ -8,6 +8,7 @@ package duchat.app;
 import duchat.entity.Server;
 import duchat.entity.User;
 import duchat.service.ServerService;
+import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 
 /**
@@ -20,29 +21,30 @@ public class frmHome extends javax.swing.JFrame {
      * Creates new form frmHome
      */
     User user;
-    DefaultListModel modelAllServer;
-    DefaultListModel modelOffServer;
-    DefaultListModel modelOnServer;
-
+    ServerService serverService = new ServerService();
+    DefaultListModel modelAllServers;
+    DefaultListModel modelOffServers;
+    DefaultListModel modelOnServers;
+    
     public frmHome() {
         initComponents();
     }
-
+    
     frmHome(User user) {
         initComponents();
         this.user = user;
         System.out.println(this.user.getUsername());
-        modelAllServer = new DefaultListModel();
-        modelOffServer = new DefaultListModel();
-        modelOnServer = new DefaultListModel();
-
-        lstAllServers.setModel(modelAllServer);
-        lstOffServers.setModel(modelOffServer);
-        lstOnServers.setModel(modelOnServer);
-
+        modelAllServers = new DefaultListModel();
+        modelOffServers = new DefaultListModel();
+        modelOnServers = new DefaultListModel();
+        
+        lstAllServers.setModel(modelAllServers);
+        lstOffServers.setModel(modelOffServers);
+        lstOnServers.setModel(modelOnServers);
+        
         loadAllServerList();
         loadMyOffServerList();
-        loadMyOnServerList();
+        
     }
 
     /**
@@ -86,7 +88,7 @@ public class frmHome extends javax.swing.JFrame {
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 3, 10)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("Online Servers");
+        jLabel2.setText("Servers");
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 3, 10)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -125,10 +127,20 @@ public class frmHome extends javax.swing.JFrame {
         });
 
         btnStart.setText("Start");
+        btnStart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStartActionPerformed(evt);
+            }
+        });
 
         btnDelete.setText("Delete");
 
         btnStop.setText("Stop");
+        btnStop.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStopActionPerformed(evt);
+            }
+        });
 
         jSeparator3.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
@@ -232,7 +244,7 @@ public class frmHome extends javax.swing.JFrame {
     private void btnJoinChatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJoinChatActionPerformed
         System.out.println(this.user.getUsername());
         Server server = lstAllServers.getSelectedValue();
-        frmChat frmChat = new frmChat(this.user, server);
+        new frmChat(this.user, server).setVisible(true);
     }//GEN-LAST:event_btnJoinChatActionPerformed
 
     private void btnCreateServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateServerActionPerformed
@@ -244,6 +256,42 @@ public class frmHome extends javax.swing.JFrame {
     private void btnFindServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindServerActionPerformed
         new frmServerLogin(this.user, new ServerService()).setVisible(true);
     }//GEN-LAST:event_btnFindServerActionPerformed
+
+    private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
+        Server server = lstOffServers.getSelectedValue();
+        startServer(server);
+    }//GEN-LAST:event_btnStartActionPerformed
+
+    private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
+        Server server = lstOnServers.getSelectedValue();
+        stopServer(server);
+    }//GEN-LAST:event_btnStopActionPerformed
+    
+    private void loadAllServerList() {
+        ArrayList<Server> serverList = serverService.getConnectedServerList(user);
+        for (Server server : serverList) {
+            modelAllServers.addElement(server);
+        }
+    }
+    
+    private void loadMyOffServerList() {
+        ArrayList<Server> serverList = serverService.getOwnedServerList(user);
+        for (Server server : serverList) {
+            modelOffServers.addElement(server);
+        }
+    }
+    
+    private void startServer(Server server) {
+        modelOffServers.removeElement(server);
+        modelOnServers.addElement(server);
+        modelAllServers.addElement(server);
+    }
+    
+    private void stopServer(Server server) {
+        modelOnServers.removeElement(server);
+        modelAllServers.removeElement(server);
+        modelOffServers.addElement(server);
+    }
 
     /**
      * @param args the command line arguments
@@ -272,16 +320,4 @@ public class frmHome extends javax.swing.JFrame {
     private javax.swing.JList<duchat.entity.Server> lstOffServers;
     private javax.swing.JList<duchat.entity.Server> lstOnServers;
     // End of variables declaration//GEN-END:variables
-
-    private void loadAllServerList() {
-
-    }
-
-    private void loadMyOffServerList() {
-
-    }
-
-    private void loadMyOnServerList() {
-
-    }
 }

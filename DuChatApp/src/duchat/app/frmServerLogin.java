@@ -118,7 +118,7 @@ public class frmServerLogin extends javax.swing.JFrame {
         try {
             Server server = serverService.getServerByCode(txtServerCode.getText());
             if (server.getId() != -1) {
-                boolean status = serverService.login(user, server);
+                boolean status = serverService.connectServer(user, server);
                 if (status) {
                     JOptionPane.showMessageDialog(rootPane, "Logged into Server!");
                     this.dispose();
