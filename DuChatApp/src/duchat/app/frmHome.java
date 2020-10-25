@@ -5,10 +5,14 @@
  */
 package duchat.app;
 
+import duchat.app.server.ChatServer;
 import duchat.entity.Server;
 import duchat.entity.User;
 import duchat.service.ServerService;
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import java.util.Set;
 import javax.swing.DefaultListModel;
 
 /**
@@ -25,11 +29,12 @@ public class frmHome extends javax.swing.JFrame {
     DefaultListModel modelAllServers;
     DefaultListModel modelOffServers;
     DefaultListModel modelOnServers;
-    
+    private HashMap<String, ChatServer> chatServers = new HashMap<>();
+
     public frmHome() {
         initComponents();
     }
-    
+
     frmHome(User user) {
         initComponents();
         this.user = user;
@@ -37,14 +42,14 @@ public class frmHome extends javax.swing.JFrame {
         modelAllServers = new DefaultListModel();
         modelOffServers = new DefaultListModel();
         modelOnServers = new DefaultListModel();
-        
+
         lstAllServers.setModel(modelAllServers);
         lstOffServers.setModel(modelOffServers);
         lstOnServers.setModel(modelOnServers);
-        
+
         loadAllServerList();
         loadMyOffServerList();
-        
+
     }
 
     /**
@@ -266,28 +271,37 @@ public class frmHome extends javax.swing.JFrame {
         Server server = lstOnServers.getSelectedValue();
         stopServer(server);
     }//GEN-LAST:event_btnStopActionPerformed
-    
+
     private void loadAllServerList() {
         ArrayList<Server> serverList = serverService.getConnectedServerList(user);
         for (Server server : serverList) {
             modelAllServers.addElement(server);
         }
     }
-    
+
     private void loadMyOffServerList() {
         ArrayList<Server> serverList = serverService.getOwnedServerList(user);
         for (Server server : serverList) {
             modelOffServers.addElement(server);
         }
     }
-    
+
     private void startServer(Server server) {
+        // TO-DO Update server ip when before started to avoid ip confilict
+    
+        ChatServer chatServer = new ChatServer(this.user, server);
+        chatServer.start();
+        chatServers.put(server.getCode(), chatServer);
+
         modelOffServers.removeElement(server);
         modelOnServers.addElement(server);
         modelAllServers.addElement(server);
     }
-    
+
     private void stopServer(Server server) {
+        ChatServer remove = chatServers.remove(server.getCode());
+        remove = null;
+        
         modelOnServers.removeElement(server);
         modelAllServers.removeElement(server);
         modelOffServers.addElement(server);
