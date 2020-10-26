@@ -7,7 +7,6 @@ package duchat.dal;
 
 import duchat.entity.Server;
 import duchat.entity.User;
-import duchat.service.MessageService;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -229,5 +228,28 @@ public class ServerDal {
             System.out.println(ex.getMessage());
         }
         return success;
+    }
+
+    public Server updateServerIp(Server server) {
+        try {
+            connectionString = DB_HELPER.getConnection();
+        } catch (SQLException ex) {
+            Logger.getLogger(MessageDal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        String query = "UPDATE server SET ip=? WHERE id=?";
+        try {
+            PreparedStatement statement = connectionString.prepareStatement(query);
+            statement.setString(1, server.getIp());
+            statement.setInt(2, server.getId());
+
+            statement.executeUpdate();
+            return getServerById(server.getId());
+
+        } catch (SQLException ex) {
+            Logger.getLogger(MessageDal.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
+        }
+        return server;
     }
 }

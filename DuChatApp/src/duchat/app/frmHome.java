@@ -9,11 +9,14 @@ import duchat.app.server.ChatServer;
 import duchat.entity.Server;
 import duchat.entity.User;
 import duchat.service.ServerService;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -29,7 +32,7 @@ public class frmHome extends javax.swing.JFrame {
     DefaultListModel modelAllServers;
     DefaultListModel modelOffServers;
     DefaultListModel modelOnServers;
-    private HashMap<String, ChatServer> chatServers = new HashMap<>();
+    private final HashMap<String, ChatServer> chatServers = new HashMap<>();
 
     public frmHome() {
         initComponents();
@@ -38,6 +41,7 @@ public class frmHome extends javax.swing.JFrame {
     frmHome(User user) {
         initComponents();
         this.user = user;
+        this.user.setPassword("");
         System.out.println(this.user.getUsername());
         modelAllServers = new DefaultListModel();
         modelOffServers = new DefaultListModel();
@@ -253,9 +257,7 @@ public class frmHome extends javax.swing.JFrame {
     }//GEN-LAST:event_btnJoinChatActionPerformed
 
     private void btnCreateServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateServerActionPerformed
-        // TODO add your handling code here:
         new frmServerCreate(this.user, new ServerService()).setVisible(true);
-
     }//GEN-LAST:event_btnCreateServerActionPerformed
 
     private void btnFindServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindServerActionPerformed
@@ -288,23 +290,44 @@ public class frmHome extends javax.swing.JFrame {
 
     private void startServer(Server server) {
         // TO-DO Update server ip when before started to avoid ip confilict
-    
-        ChatServer chatServer = new ChatServer(this.user, server);
-        chatServer.start();
-        chatServers.put(server.getCode(), chatServer);
+        Server updatedServer = updateServerIp(server);
+        if (updatedServer != null) {
+            ChatServer chatServer = new ChatServer(this.user, updatedServer);
+            chatServer.start();
+            chatServers.put(server.getCode(), chatServer);
 
-        modelOffServers.removeElement(server);
-        modelOnServers.addElement(server);
-        modelAllServers.addElement(server);
+            modelOffServers.removeElement(server);
+            modelOnServers.addElement(server);
+            modelAllServers.addElement(server);
+        } else {
+            JOptionPane.showMessageDialog(rootPane, "Server could not started. Try again later!");
+        }
     }
 
     private void stopServer(Server server) {
         ChatServer remove = chatServers.remove(server.getCode());
         remove = null;
-        
+
         modelOnServers.removeElement(server);
         modelAllServers.removeElement(server);
         modelOffServers.addElement(server);
+    }
+
+    private Server updateServerIp(Server server) {
+        InetAddress inetAddress;
+        try {
+            inetAddress = InetAddress.getLocalHost();
+            String hostIp = inetAddress.getHostAddress();
+            if (hostIp.equals(server.getIp())) {
+                return server;
+            } else {
+                server.setIp(inetAddress.getHostAddress());
+                return serverService.updateServerIp(server);
+            }
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(frmHome.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     /**

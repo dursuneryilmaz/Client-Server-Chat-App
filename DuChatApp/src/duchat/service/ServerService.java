@@ -25,7 +25,10 @@ public class ServerService {
     public boolean deleteServer(Server server) {
         return serverDal.deleteServer(server);
     }
-
+    
+    public Server updateServerIp(Server server){
+        return serverDal.updateServerIp(server);
+    }
     public ArrayList<Server> getConnectedServerList(User user) {
         return serverDal.getConnectedServerList(user);
     }
