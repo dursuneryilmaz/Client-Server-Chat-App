@@ -136,6 +136,7 @@ public class frmServerCreate extends javax.swing.JFrame {
             server.setIp(ip);
             boolean create = serverService.createServer(server);
             if (create) {
+                 // TO-DO after create a server, off server list should be reloaded in frmHome.
                 JOptionPane.showMessageDialog(rootPane, "Server Created!");
                 this.dispose();
             } else {

@@ -39,17 +39,20 @@ public class ClientAcceptThread implements Runnable {
         while (true) {
             try {
                 clientSocket = this.serverSocket.accept();
+                System.out.println("New User Connected");
                 InputStream inputStream = this.clientSocket.getInputStream();
                 ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 
                 OutputStream outputStream = this.clientSocket.getOutputStream();
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-                // TO-DO make client side send the user object or transport packet include user object to stode user names
+                // TO-DO make client side send the user object or transport packet include user object to store user names
                 
                 clientPacket = (User) objectInputStream.readObject();
                 ClientHandlerThread newUserThread = new ClientHandlerThread(this.clientSocket, this.chatServer);
                 chatServer.addUserThread(newUserThread);
                 newUserThread.start();
+                chatServer.increaseUserCount();
+                //System.out.println(chatServer.getUserCount());
                 //chatServer.addUserName("incoming username from clientside");
 
             } catch (IOException | ClassNotFoundException ex) {

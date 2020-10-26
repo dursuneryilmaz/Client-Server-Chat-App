@@ -121,6 +121,7 @@ public class frmServerLogin extends javax.swing.JFrame {
                 boolean status = serverService.connectServer(user, server);
                 if (status) {
                     JOptionPane.showMessageDialog(rootPane, "Logged into Server!");
+                    // TO-DO after logged in a server loggedin server list should be reloaded in frmHome.
                     this.dispose();
                 } else {
                     JOptionPane.showMessageDialog(rootPane, "Login Failed! Please try again later!");
