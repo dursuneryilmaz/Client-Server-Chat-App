@@ -5,11 +5,13 @@
  */
 package duchat.entity;
 
+import java.io.Serializable;
+
 /**
  *
  * @author dursun
  */
-public class User {
+public class User implements Serializable{
 
     private int id = -1;
     private String username;

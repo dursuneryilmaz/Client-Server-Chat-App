@@ -5,11 +5,13 @@
  */
 package duchat.entity;
 
+import java.io.Serializable;
+
 /**
  *
  * @author dursun
  */
-public class Message {
+public class Message implements Serializable{
     private int id;
     private int server;
     private String sendername;
