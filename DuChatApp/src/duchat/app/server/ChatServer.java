@@ -5,6 +5,7 @@
  */
 package duchat.app.server;
 
+import duchat.entity.Message;
 import duchat.entity.Server;
 import duchat.entity.User;
 import java.io.IOException;
@@ -20,72 +21,69 @@ import java.util.logging.Logger;
  */
 public class ChatServer {
 
-    private String serverIp;
-    private int portNumber;
-    private String serverName;
+    private Server server;
     private ServerSocket serverSocket = null;
-    private String serverCode;
     private Set<ClientHandlerThread> clientThreads = new HashSet<ClientHandlerThread>();
     private Set<String> userNames = new HashSet<>();
-
     private static int userCount = 0;
+    private ClientAcceptThread clientAcceptThread;
 
     public ChatServer(User user, Server server) {
         try {
-            this.serverName = server.getName();
-            this.portNumber = server.getPort();
-            this.serverCode = server.getCode();
-            this.serverSocket = new ServerSocket(this.portNumber);
-            this.serverIp = server.getIp();
+            this.server = server;
+            this.serverSocket = new ServerSocket(this.server.getPort());
 
         } catch (IOException ex) {
             Logger.getLogger(ChatServer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public void start() {
-        try {
-            new ClientAcceptThread(this).start();
-
-        } catch (IOException ex) {
-            Logger.getLogger(ChatServer.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public Server getServer() {
+        return server;
     }
 
-    public Set<ClientHandlerThread> getClientThreads() {
-        return clientThreads;
+    public int getServerId() {
+        return server.getId();
     }
 
-    public int getUserCount() {
-        return userCount;
+    public String getServerName() {
+        return server.getName();
     }
 
-    public Set<String> getUserNames() {
-        return this.userNames;
+    public String getServerIp() {
+        return server.getIp();
+    }
+
+    public int getServerPort() {
+        return server.getPort();
+    }
+
+    public int getServerOwner() {
+        return server.getOwner();
+    }
+
+    public String getServerCode() {
+        return server.getCode();
     }
 
     public ServerSocket getServerSocket() {
         return serverSocket;
     }
 
-    public String getServerName() {
-        return serverName;
+    public Set<ClientHandlerThread> getClientThreads() {
+        return clientThreads;
     }
 
-    public String getHost() {
-        return serverIp;
+    public Set<String> getUserNames() {
+        return this.userNames;
     }
 
-    public int getPortNumber() {
-        return portNumber;
+    public int getUserCount() {
+        return userCount;
     }
 
     public void addUserThread(ClientHandlerThread chatClientThread) {
         this.clientThreads.add(chatClientThread);
-    }
-
-    public String getServerCode() {
-        return serverCode;
     }
 
     public void increaseUserCount() {
@@ -100,7 +98,21 @@ public class ChatServer {
         userNames.add(userName);
     }
 
-    void broadcast(String message, ClientHandlerThread excludeUser) {
+    void removeUser(ClientHandlerThread aUser) {
+        clientThreads.remove(aUser);
+    }
+
+    public void start() {
+        try {
+            System.out.println(server.getName() + "-" + server.getId() + ": Server Started.");
+            this.clientAcceptThread = new ClientAcceptThread(this);
+            clientAcceptThread.start();
+        } catch (IOException ex) {
+            Logger.getLogger(ChatServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    void broadcast(Message message, ClientHandlerThread excludeUser) {
         for (ClientHandlerThread aUser : clientThreads) {
             if (aUser != excludeUser) {
                 aUser.sendMessage(message);
@@ -108,11 +120,18 @@ public class ChatServer {
         }
     }
 
-    void removeUser(String userName, ClientHandlerThread aUser) {
-        boolean removed = userNames.remove(userName);
-        if (removed) {
-            clientThreads.remove(aUser);
-            System.out.println("The user " + userName + " quitted");
+    public void stop() {
+        try {
+            clientAcceptThread.stop();
+
+            for (ClientHandlerThread clientHandlerThread : clientThreads) {
+                clientHandlerThread.stop();
+            }
+            clientThreads.clear();
+            serverSocket.close();
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
         }
     }
+
 }
