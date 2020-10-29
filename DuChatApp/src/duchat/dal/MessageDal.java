@@ -6,11 +6,13 @@
 package duchat.dal;
 
 import duchat.entity.Message;
+import duchat.entity.Server;
 import duchat.entity.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,7 +25,7 @@ public class MessageDal {
     public static final DbHelper DB_HELPER = new DbHelper();
     static Connection connectionString;
 
-    public  boolean sendMessage(Message message) {
+    public boolean createMessage(Message message) {
         try {
             connectionString = DB_HELPER.getConnection();
         } catch (SQLException ex) {
@@ -45,37 +47,44 @@ public class MessageDal {
             success = statement.execute();
 
         } catch (SQLException ex) {
+            System.out.print(ex.getMessage());
         }
 
         return success;
     }
 
-    public  ResultSet getMessages(User user) {
+    public ArrayList<Message> getMessages(User user, Server server) {
         try {
             connectionString = DB_HELPER.getConnection();
         } catch (SQLException ex) {
             Logger.getLogger(MessageDal.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        boolean success = false;
-        ResultSet rsx = null;
-        String query = "SELECT * FROM message WHERE server=? and timestamp>= DATE_SUB(NOW(), INTERVAL 1 HOUR)";
+        ArrayList<Message> messages = new ArrayList<>();
+        
+        String query = "SELECT * FROM message WHERE server=?"; // and timestamp>= DATE_SUB(NOW(), INTERVAL 1 DAY)
 
         try {
             PreparedStatement statement = connectionString.prepareStatement(query);
 
-            statement.setString(1, "");
-            statement.setInt(2, 2);
-
-            ResultSet rs = statement.executeQuery();
-
-            if (rs.first()) {
-
-                success = true;
+            statement.setInt(1, server.getId());
+            
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                messages.add(new Message(
+                        resultSet.getInt("id"),
+                        resultSet.getInt("server"),
+                        resultSet.getString("sendername"),
+                        resultSet.getInt("sender"),
+                        resultSet.getString("text"),
+                        resultSet.getString("timestamp")
+                )
+                );
             }
-            return rs;
+            return messages;
         } catch (SQLException ex) {
+            System.out.print(ex.getMessage());
         }
-        return rsx;
+        return messages;
     }
 }
