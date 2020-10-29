@@ -5,6 +5,7 @@
  */
 package duchat.app;
 
+import duchat.app.client.frmChat;
 import duchat.app.server.ChatServer;
 import duchat.entity.Server;
 import duchat.entity.User;
@@ -42,7 +43,8 @@ public class frmHome extends javax.swing.JFrame {
         initComponents();
         this.user = user;
         this.user.setPassword("");
-        System.out.println(this.user.getUsername());
+        this.setTitle("DuChatApp | @" + user.getUsername());
+        System.out.println(this.user.getUsername() + ": Logged In.");
         modelAllServers = new DefaultListModel();
         modelOffServers = new DefaultListModel();
         modelOnServers = new DefaultListModel();
@@ -86,6 +88,7 @@ public class frmHome extends javax.swing.JFrame {
         btnStop = new javax.swing.JButton();
         jSeparator3 = new javax.swing.JSeparator();
         btnCreateServer = new javax.swing.JButton();
+        btnGetUserCount = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Du Chat App");
@@ -127,6 +130,11 @@ public class frmHome extends javax.swing.JFrame {
         });
 
         btnLeaveServer.setText("Leave Server");
+        btnLeaveServer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLeaveServerActionPerformed(evt);
+            }
+        });
 
         btnFindServer.setText("Find Server");
         btnFindServer.addActionListener(new java.awt.event.ActionListener() {
@@ -157,6 +165,13 @@ public class frmHome extends javax.swing.JFrame {
         btnCreateServer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCreateServerActionPerformed(evt);
+            }
+        });
+
+        btnGetUserCount.setText("Get User Count");
+        btnGetUserCount.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGetUserCountActionPerformed(evt);
             }
         });
 
@@ -194,7 +209,8 @@ public class frmHome extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
-                    .addComponent(btnStop, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnStop, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnGetUserCount, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -229,7 +245,9 @@ public class frmHome extends javax.swing.JFrame {
                                     .addComponent(btnStop)
                                     .addComponent(btnDelete))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnCreateServer)))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnCreateServer)
+                                    .addComponent(btnGetUserCount))))
                         .addContainerGap(20, Short.MAX_VALUE))
                     .addComponent(jSeparator3)))
         );
@@ -251,9 +269,8 @@ public class frmHome extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnJoinChatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJoinChatActionPerformed
-        System.out.println(this.user.getUsername());
         Server server = lstAllServers.getSelectedValue();
-        new frmChat(this.user, server).setVisible(true);
+        var frmChat = new frmChat(this.user, server);
     }//GEN-LAST:event_btnJoinChatActionPerformed
 
     private void btnCreateServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateServerActionPerformed
@@ -274,6 +291,18 @@ public class frmHome extends javax.swing.JFrame {
         stopServer(server);
     }//GEN-LAST:event_btnStopActionPerformed
 
+    private void btnLeaveServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLeaveServerActionPerformed
+        Server server = lstAllServers.getSelectedValue();
+        leaveServer(server);
+    }//GEN-LAST:event_btnLeaveServerActionPerformed
+
+    private void btnGetUserCountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGetUserCountActionPerformed
+        Server server = lstOnServers.getSelectedValue();
+        ChatServer chatServer = chatServers.get(server.getCode());
+        System.out.println("Servers: " + chatServers.size());
+        System.out.println("User in Selected Server: " + chatServer.getUserCount());
+    }//GEN-LAST:event_btnGetUserCountActionPerformed
+
     private void loadAllServerList() {
         ArrayList<Server> serverList = serverService.getConnectedServerList(user);
         for (Server server : serverList) {
@@ -293,9 +322,11 @@ public class frmHome extends javax.swing.JFrame {
         Server updatedServer = updateServerIp(server);
         if (updatedServer != null) {
             ChatServer chatServer = new ChatServer(this.user, updatedServer);
-            chatServer.start();
+            serverService.connectServer(user, server);
             chatServers.put(server.getCode(), chatServer);
-
+            chatServer = chatServers.get(server.getCode());
+            chatServer.start();
+            
             modelOffServers.removeElement(server);
             modelOnServers.addElement(server);
             modelAllServers.addElement(server);
@@ -306,11 +337,17 @@ public class frmHome extends javax.swing.JFrame {
 
     private void stopServer(Server server) {
         ChatServer remove = chatServers.remove(server.getCode());
-        remove = null;
+        remove.stop();
+        serverService.disconnectServer(this.user, server);
 
         modelOnServers.removeElement(server);
         modelAllServers.removeElement(server);
         modelOffServers.addElement(server);
+    }
+
+    private void leaveServer(Server server) {
+        serverService.disconnectServer(this.user, server);
+        modelAllServers.removeElement(server);
     }
 
     private Server updateServerIp(Server server) {
@@ -338,6 +375,7 @@ public class frmHome extends javax.swing.JFrame {
     private javax.swing.JButton btnCreateServer;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnFindServer;
+    private javax.swing.JButton btnGetUserCount;
     private javax.swing.JButton btnJoinChat;
     private javax.swing.JButton btnLeaveServer;
     private javax.swing.JButton btnStart;

@@ -78,6 +78,7 @@
                       <Component id="jScrollPane3" alignment="0" pref="0" max="32767" attributes="0"/>
                       <Component id="jLabel4" alignment="0" pref="131" max="32767" attributes="0"/>
                       <Component id="btnStop" max="32767" attributes="0"/>
+                      <Component id="btnGetUserCount" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -120,7 +121,10 @@
                                       <Component id="btnDelete" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="btnCreateServer" min="-2" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="btnCreateServer" min="-2" max="-2" attributes="0"/>
+                                      <Component id="btnGetUserCount" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  </Group>
                               </Group>
                           </Group>
                           <EmptySpace pref="20" max="32767" attributes="0"/>
@@ -248,6 +252,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Leave Server"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnLeaveServerActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnFindServer">
           <Properties>
@@ -289,6 +296,14 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCreateServerActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnGetUserCount">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Get User Count"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnGetUserCountActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>
