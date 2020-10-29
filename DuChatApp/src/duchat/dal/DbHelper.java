@@ -10,9 +10,9 @@ import java.sql.*;
  * @author dursun
  */
 public class DbHelper {
-    private final String userName="root";
+    private final String userName="appuser";
     private final String password="12345";
-    private final String dbUrl="jdbc:mysql://localhost:3306/duchat?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+    private final String dbUrl="jdbc:mysql://192.168.16.108:3306/duchat?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
     
     public Connection getConnection() throws SQLException{
         return DriverManager.getConnection(dbUrl,userName,password);
