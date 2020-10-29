@@ -282,7 +282,6 @@ public class frmLogin extends javax.swing.JFrame {
         UserService userService = new UserService();
         user = userService.logIn(user);
         if (-1 != user.getId()) {
-            JOptionPane.showMessageDialog(rootPane, "Login Successful.");
             this.setVisible(false);
             txtUserName.setText("");
             pswLogin.setText("");
