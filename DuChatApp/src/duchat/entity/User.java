@@ -11,7 +11,7 @@ import java.io.Serializable;
  *
  * @author dursun
  */
-public class User implements Serializable{
+public class User implements Serializable {
 
     private int id = -1;
     private String username;
@@ -68,7 +68,7 @@ public class User implements Serializable{
         this.email = email;
     }
 
-     @Override
+    @Override
     public String toString() {
         return username;
     }
