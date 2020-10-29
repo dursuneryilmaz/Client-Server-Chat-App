@@ -25,10 +25,11 @@ public class ServerService {
     public boolean deleteServer(Server server) {
         return serverDal.deleteServer(server);
     }
-    
-    public Server updateServerIp(Server server){
+
+    public Server updateServerIp(Server server) {
         return serverDal.updateServerIp(server);
     }
+
     public ArrayList<Server> getConnectedServerList(User user) {
         return serverDal.getConnectedServerList(user);
     }
@@ -41,7 +42,11 @@ public class ServerService {
         return serverDal.connectServer(user, server);
     }
 
+    public boolean disconnectServer(User user, Server server) {
+        return serverDal.disconnectServer(user, server);
+    }
+
     public ArrayList<Server> getOwnedServerList(User user) {
-       return serverDal.getOwnedServerList(user);
+        return serverDal.getOwnedServerList(user);
     }
 }

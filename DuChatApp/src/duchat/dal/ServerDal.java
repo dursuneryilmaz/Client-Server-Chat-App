@@ -230,6 +230,31 @@ public class ServerDal {
         return success;
     }
 
+    public boolean disconnectServer(User user, Server server) {
+        try {
+            connectionString = DB_HELPER.getConnection();
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        boolean success = false;
+
+        String query = "DELETE FROM serveruser WHERE server_id=? AND user_id=?";
+
+        try {
+            PreparedStatement statement = connectionString.prepareStatement(query);
+
+            statement.setInt(1, server.getId());
+            statement.setInt(2, user.getId());
+
+            statement.executeUpdate();
+            success = true;
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return success;
+    }
+
     public Server updateServerIp(Server server) {
         try {
             connectionString = DB_HELPER.getConnection();
