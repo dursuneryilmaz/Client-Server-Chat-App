@@ -25,7 +25,6 @@ public class ChatServer {
     private ServerSocket serverSocket = null;
     private Set<ClientHandlerThread> clientThreads = new HashSet<ClientHandlerThread>();
     private Set<String> userNames = new HashSet<>();
-    private static int userCount = 0;
     private ClientAcceptThread clientAcceptThread;
 
     public ChatServer(User user, Server server) {
@@ -79,15 +78,11 @@ public class ChatServer {
     }
 
     public int getUserCount() {
-        return userCount;
+        return clientThreads.size();
     }
 
     public void addUserThread(ClientHandlerThread chatClientThread) {
         this.clientThreads.add(chatClientThread);
-    }
-
-    public void increaseUserCount() {
-        userCount += 1;
     }
 
     boolean hasUsers() {
