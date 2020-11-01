@@ -136,8 +136,8 @@ public class frmServerCreate extends javax.swing.JFrame {
             server.setIp(ip);
             boolean create = serverService.createServer(server);
             if (create) {
-                 // TO-DO after create a server, off server list should be reloaded in frmHome.
                 JOptionPane.showMessageDialog(rootPane, "Server Created!");
+                frmHome.modelOffServers.addElement(server);
                 this.dispose();
             } else {
                 JOptionPane.showMessageDialog(rootPane, "Server Creation Failed! Please try again later!");
@@ -149,7 +149,7 @@ public class frmServerCreate extends javax.swing.JFrame {
         }
 
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnServerCreate;
     private javax.swing.JLabel jLabel1;
