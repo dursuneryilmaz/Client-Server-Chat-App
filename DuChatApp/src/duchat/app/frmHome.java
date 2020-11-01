@@ -30,9 +30,9 @@ public class frmHome extends javax.swing.JFrame {
      */
     User user;
     ServerService serverService = new ServerService();
-    DefaultListModel modelAllServers;
-    DefaultListModel modelOffServers;
-    DefaultListModel modelOnServers;
+    static DefaultListModel modelAllServers;
+    static DefaultListModel modelOffServers;
+    static DefaultListModel modelOnServers;
     private final HashMap<String, ChatServer> chatServers = new HashMap<>();
 
     public frmHome() {
@@ -93,6 +93,11 @@ public class frmHome extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Du Chat App");
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -107,13 +112,28 @@ public class frmHome extends javax.swing.JFrame {
         jLabel3.setText("My Offline Servers");
 
         lstAllServers.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        lstAllServers.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                lstAllServersValueChanged(evt);
+            }
+        });
         jScrollPane1.setViewportView(lstAllServers);
 
         lstOffServers.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        lstOffServers.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                lstOffServersValueChanged(evt);
+            }
+        });
         jScrollPane2.setViewportView(lstOffServers);
 
         lstOnServers.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         lstOnServers.setToolTipText("");
+        lstOnServers.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                lstOnServersValueChanged(evt);
+            }
+        });
         jScrollPane3.setViewportView(lstOnServers);
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 3, 10)); // NOI18N
@@ -303,6 +323,29 @@ public class frmHome extends javax.swing.JFrame {
         System.out.println("User in Selected Server: " + chatServer.getUserCount());
     }//GEN-LAST:event_btnGetUserCountActionPerformed
 
+    private void lstAllServersValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstAllServersValueChanged
+        lstOffServers.clearSelection();
+        lstOnServers.clearSelection();
+    }//GEN-LAST:event_lstAllServersValueChanged
+
+    private void lstOffServersValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstOffServersValueChanged
+        lstAllServers.clearSelection();
+        lstOnServers.clearSelection();
+    }//GEN-LAST:event_lstOffServersValueChanged
+
+    private void lstOnServersValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstOnServersValueChanged
+        lstOffServers.clearSelection();
+        lstAllServers.clearSelection();
+    }//GEN-LAST:event_lstOnServersValueChanged
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        while (modelOnServers.getSize() != 0) {
+            Server server = (Server) modelOnServers.getElementAt(0);
+            stopServer(server);
+        }
+        modelOnServers.clear();
+    }//GEN-LAST:event_formWindowClosing
+
     private void loadAllServerList() {
         ArrayList<Server> serverList = serverService.getConnectedServerList(user);
         for (Server server : serverList) {
@@ -326,7 +369,7 @@ public class frmHome extends javax.swing.JFrame {
             chatServers.put(server.getCode(), chatServer);
             chatServer = chatServers.get(server.getCode());
             chatServer.start();
-            
+
             modelOffServers.removeElement(server);
             modelOnServers.addElement(server);
             modelAllServers.addElement(server);
