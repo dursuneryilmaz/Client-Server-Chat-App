@@ -121,6 +121,7 @@ public class frmServerCreate extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnServerCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnServerCreateActionPerformed
@@ -134,10 +135,10 @@ public class frmServerCreate extends javax.swing.JFrame {
             String ip = inetAddress.getHostAddress();
 
             server.setIp(ip);
-            boolean create = serverService.createServer(server);
-            if (create) {
+            Server created = serverService.createServer(server);
+            if (created.getId() != -1) {
                 JOptionPane.showMessageDialog(rootPane, "Server Created!");
-                frmHome.modelOffServers.addElement(server);
+                frmHome.modelOffServers.addElement(created);
                 this.dispose();
             } else {
                 JOptionPane.showMessageDialog(rootPane, "Server Creation Failed! Please try again later!");
