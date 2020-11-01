@@ -18,7 +18,7 @@ public class ServerService {
 
     final ServerDal serverDal = new ServerDal();
 
-    public boolean createServer(Server server) {
+    public Server createServer(Server server) {
         return serverDal.createServer(server);
     }
 

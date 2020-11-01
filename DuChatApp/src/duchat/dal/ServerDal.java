@@ -9,6 +9,7 @@ import duchat.entity.Server;
 import duchat.entity.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -22,40 +23,42 @@ import java.util.logging.Logger;
 public class ServerDal {
 
     public static final DbHelper DB_HELPER = new DbHelper();
-    static Connection connectionString;
+    static Connection connection;
 
-    public boolean createServer(Server server) {
+    public Server createServer(Server server) {
         try {
-            connectionString = DB_HELPER.getConnection();
+            connection = DB_HELPER.getConnection();
         } catch (SQLException ex) {
             Logger.getLogger(UserDal.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        boolean success = false;
-
         String query = "INSERT INTO server (name,ip,port,owner) values(?,?,?,?)";
 
         try {
-            PreparedStatement statement = connectionString.prepareStatement(query);
+            PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 
             statement.setString(1, server.getName());
             statement.setString(2, server.getIp());
             statement.setInt(3, server.getPort());
             statement.setInt(4, server.getOwner());
-
             statement.executeUpdate();
-            success = true;
+
+            ResultSet rs = statement.getGeneratedKeys();
+            if (rs.next()) {
+                return getServerById(Integer.parseInt(rs.getString(1)));
+            }
+
         } catch (SQLException ex) {
             Logger.getLogger(UserDal.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex.getMessage());
         }
 
-        return success;
+        return null;
     }
 
     public boolean deleteServer(Server server) {
         try {
-            connectionString = DB_HELPER.getConnection();
+            connection = DB_HELPER.getConnection();
         } catch (SQLException ex) {
             Logger.getLogger(UserDal.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -65,7 +68,7 @@ public class ServerDal {
         String query = "DELETE FROM server WHERE id=?";
 
         try {
-            PreparedStatement statement = connectionString.prepareStatement(query);
+            PreparedStatement statement = connection.prepareStatement(query);
 
             statement.setInt(1, server.getId());
 
@@ -81,7 +84,7 @@ public class ServerDal {
 
     public ArrayList<Server> getConnectedServerList(User user) {
         try {
-            connectionString = DB_HELPER.getConnection();
+            connection = DB_HELPER.getConnection();
         } catch (SQLException ex) {
             Logger.getLogger(MessageDal.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -89,7 +92,7 @@ public class ServerDal {
 
         String query = "SELECT * FROM server WHERE id IN(SELECT server_id FROM serveruser WHERE user_id=?)";
         try {
-            PreparedStatement statement = connectionString.prepareStatement(query);
+            PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, user.getId());
             ResultSet rs = statement.executeQuery();
 
@@ -114,7 +117,7 @@ public class ServerDal {
 
     public ArrayList<Server> getOwnedServerList(User user) {
         try {
-            connectionString = DB_HELPER.getConnection();
+            connection = DB_HELPER.getConnection();
         } catch (SQLException ex) {
             Logger.getLogger(MessageDal.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -122,7 +125,7 @@ public class ServerDal {
 
         String query = "SELECT * FROM server WHERE owner=?";
         try {
-            PreparedStatement statement = connectionString.prepareStatement(query);
+            PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, user.getId());
             ResultSet rs = statement.executeQuery();
 
@@ -147,7 +150,7 @@ public class ServerDal {
 
     public Server getServerById(int id) {
         try {
-            connectionString = DB_HELPER.getConnection();
+            connection = DB_HELPER.getConnection();
         } catch (SQLException ex) {
             Logger.getLogger(MessageDal.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -155,7 +158,7 @@ public class ServerDal {
 
         String query = "SELECT * FROM server WHERE id=?";
         try {
-            PreparedStatement statement = connectionString.prepareStatement(query);
+            PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, id);
             ResultSet rs = statement.executeQuery();
 
@@ -177,7 +180,7 @@ public class ServerDal {
 
     public Server getServerByCode(String code) {
         try {
-            connectionString = DB_HELPER.getConnection();
+            connection = DB_HELPER.getConnection();
         } catch (SQLException ex) {
             Logger.getLogger(MessageDal.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -185,7 +188,7 @@ public class ServerDal {
 
         String query = "SELECT * FROM server WHERE code=?";
         try {
-            PreparedStatement statement = connectionString.prepareStatement(query);
+            PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, code);
             ResultSet rs = statement.executeQuery();
 
@@ -207,7 +210,7 @@ public class ServerDal {
 
     public boolean connectServer(User user, Server server) {
         try {
-            connectionString = DB_HELPER.getConnection();
+            connection = DB_HELPER.getConnection();
         } catch (SQLException ex) {
             Logger.getLogger(UserDal.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -217,7 +220,7 @@ public class ServerDal {
         String query = "INSERT INTO serveruser (server_id,user_id) values(?,?)";
 
         try {
-            PreparedStatement statement = connectionString.prepareStatement(query);
+            PreparedStatement statement = connection.prepareStatement(query);
 
             statement.setInt(1, server.getId());
             statement.setInt(2, user.getId());
@@ -232,7 +235,7 @@ public class ServerDal {
 
     public boolean disconnectServer(User user, Server server) {
         try {
-            connectionString = DB_HELPER.getConnection();
+            connection = DB_HELPER.getConnection();
         } catch (SQLException ex) {
             Logger.getLogger(UserDal.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -242,7 +245,7 @@ public class ServerDal {
         String query = "DELETE FROM serveruser WHERE server_id=? AND user_id=?";
 
         try {
-            PreparedStatement statement = connectionString.prepareStatement(query);
+            PreparedStatement statement = connection.prepareStatement(query);
 
             statement.setInt(1, server.getId());
             statement.setInt(2, user.getId());
@@ -257,14 +260,14 @@ public class ServerDal {
 
     public Server updateServerIp(Server server) {
         try {
-            connectionString = DB_HELPER.getConnection();
+            connection = DB_HELPER.getConnection();
         } catch (SQLException ex) {
             Logger.getLogger(MessageDal.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         String query = "UPDATE server SET ip=? WHERE id=?";
         try {
-            PreparedStatement statement = connectionString.prepareStatement(query);
+            PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, server.getIp());
             statement.setInt(2, server.getId());
 
