@@ -40,10 +40,7 @@ public class ClientAcceptThread implements Runnable {
                 ClientHandlerThread newUserThread = new ClientHandlerThread(this.clientSocket, this.chatServer);
                 this.chatServer.addUserThread(newUserThread);
                 newUserThread.start();
-                this.chatServer.increaseUserCount();
-
-                //chatServer.addUserName("incoming username from clientside");
-            } catch (IOException  ex) {
+            } catch (IOException ex) {
                 System.out.println(ex.getMessage());
             }
         }
