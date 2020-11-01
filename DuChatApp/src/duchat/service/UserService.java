@@ -22,13 +22,16 @@ public class UserService {
 
     public boolean register(User user) {
         if (!"".equals(user.getEmail().trim()) && !"".equals(user.getPassword().trim()) && !"".equals(user.getUsername().trim())) {
-            return userDal.register(user);
+            int userNameCheck = userDal.userNameCheck(user);
+            if (userNameCheck == -1) {
+                return userDal.register(user);
+            }
         }
         return false;
     }
 
     public int userStatusCheck(User user) {
-        return userDal.userStatusCheck(user);
+        return userDal.userNameCheck(user);
     }
 
     public boolean logOut(int id) {

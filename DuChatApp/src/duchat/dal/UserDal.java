@@ -43,20 +43,6 @@ public class UserDal {
             connectionString.close();
         } catch (SQLException ex) {
         }
-
-        /* try {
-        connectionString = DB_HELPER.getConnection();
-        String queryGiris = "UPDATE user SET online=? WHERE id=?";
-        PreparedStatement statementGiris = connectionString.prepareStatement(queryGiris);
-        
-        statementGiris.setString(1, "1");
-        statementGiris.setString(2, Integer.toString(userId));
-        boolean durum = statementGiris.execute();
-        if (durum) {
-        userId = -1;
-        }
-        } catch (SQLException e) {
-        }*/
         return user;
     }
 
@@ -87,7 +73,7 @@ public class UserDal {
         return success;
     }
 
-    public int userStatusCheck(User user) {
+    public int userNameCheck(User user) {
         try {
             connectionString = DB_HELPER.getConnection();
         } catch (SQLException ex) {
@@ -103,14 +89,13 @@ public class UserDal {
             statement.setString(1, user.getUsername());
             ResultSet rs = statement.executeQuery();
 
-            if (rs.first()) {
+            if (rs.next()) {
                 userId = Integer.parseInt(rs.getString("id"));
             }
 
             connectionString.close();
         } catch (SQLException ex) {
         }
-
         return userId;
     }
 

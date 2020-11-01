@@ -271,7 +271,7 @@ public class frmLogin extends javax.swing.JFrame {
             txtRegisterUserName.setText("");
             pswRegister.setText("");
         } else {
-            JOptionPane.showMessageDialog(rootPane, "Register Failed. Try Again!");
+            JOptionPane.showMessageDialog(rootPane, "Register Failed. Username Already Taken!");
         }
     }
 
@@ -286,6 +286,7 @@ public class frmLogin extends javax.swing.JFrame {
             txtUserName.setText("");
             pswLogin.setText("");
             new frmHome(user).setVisible(true);
+
         } else {
             JOptionPane.showMessageDialog(rootPane, "Login Failed. Try Again!");
         }
