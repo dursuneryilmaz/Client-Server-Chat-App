@@ -108,6 +108,7 @@ public class frmServerLogin extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnServerLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnServerLoginActionPerformed
