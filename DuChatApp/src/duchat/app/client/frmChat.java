@@ -8,6 +8,12 @@ package duchat.app.client;
 import duchat.entity.Message;
 import duchat.entity.Server;
 import duchat.entity.User;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -95,6 +101,7 @@ public class frmChat extends javax.swing.JFrame {
             Message message = new Message(-1, server.getId(), user.getUsername(), user.getId(), messageText, "");
             chatMessages.addElement(">>> " + messageText);
             objectOutputStream.writeObject(message);
+            txtMessage.setText("");
             showLastMessage();
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, "Sunucu artık çalışmıyor");
@@ -123,6 +130,8 @@ public class frmChat extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jEditorPane1 = new javax.swing.JEditorPane();
         pnlChat = new javax.swing.JPanel();
         lblServer = new javax.swing.JLabel();
         lblIp = new javax.swing.JLabel();
@@ -136,6 +145,9 @@ public class frmChat extends javax.swing.JFrame {
         lblServerCode = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         lstChatMessage = new javax.swing.JList<>();
+        btnCodeCopy = new javax.swing.JButton();
+
+        jScrollPane1.setViewportView(jEditorPane1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("DuChatApp");
@@ -177,6 +189,13 @@ public class frmChat extends javax.swing.JFrame {
         lstChatMessage.setName(""); // NOI18N
         jScrollPane2.setViewportView(lstChatMessage);
 
+        btnCodeCopy.setText("Copy");
+        btnCodeCopy.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCodeCopyActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pnlChatLayout = new javax.swing.GroupLayout(pnlChat);
         pnlChat.setLayout(pnlChatLayout);
         pnlChatLayout.setHorizontalGroup(
@@ -201,7 +220,8 @@ public class frmChat extends javax.swing.JFrame {
                             .addComponent(lblServerName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(lblServerPort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(lblServerCode, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnCodeCopy)))
                 .addContainerGap())
         );
         pnlChatLayout.setVerticalGroup(
@@ -222,9 +242,10 @@ public class frmChat extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnlChatLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCode)
-                    .addComponent(lblServerCode))
+                    .addComponent(lblServerCode)
+                    .addComponent(btnCodeCopy))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 259, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnlChatLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -254,6 +275,7 @@ public class frmChat extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
@@ -269,8 +291,28 @@ public class frmChat extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowClosing
 
+    private void btnCodeCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCodeCopyActionPerformed
+        String code = lblServerCode.getText();
+        StringSelection data = new StringSelection(code);
+        Clipboard cb = Toolkit.getDefaultToolkit()
+                .getSystemClipboard();
+        cb.setContents(data, data);
+
+        try {
+            Transferable t = cb.getContents(null);
+            if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                t.getTransferData(DataFlavor.stringFlavor);
+            }
+        } catch (UnsupportedFlavorException | IOException ex) {
+            System.out.println("");
+        }
+    }//GEN-LAST:event_btnCodeCopyActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCodeCopy;
     private javax.swing.JButton btnSend;
+    private javax.swing.JEditorPane jEditorPane1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblCode;
     private javax.swing.JLabel lblIp;
