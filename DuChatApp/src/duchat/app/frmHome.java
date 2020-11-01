@@ -171,6 +171,11 @@ public class frmHome extends javax.swing.JFrame {
         });
 
         btnDelete.setText("Delete");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         btnStop.setText("Stop");
         btnStop.addActionListener(new java.awt.event.ActionListener() {
@@ -286,6 +291,7 @@ public class frmHome extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnJoinChatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJoinChatActionPerformed
@@ -346,6 +352,11 @@ public class frmHome extends javax.swing.JFrame {
         modelOnServers.clear();
     }//GEN-LAST:event_formWindowClosing
 
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        Server server = lstOffServers.getSelectedValue();
+        deleteServer(server);
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
     private void loadAllServerList() {
         ArrayList<Server> serverList = serverService.getConnectedServerList(user);
         for (Server server : serverList) {
@@ -386,6 +397,11 @@ public class frmHome extends javax.swing.JFrame {
         modelOnServers.removeElement(server);
         modelAllServers.removeElement(server);
         modelOffServers.addElement(server);
+    }
+
+    private void deleteServer(Server server) {
+        serverService.deleteServer(server);
+        modelOffServers.removeElement(server);
     }
 
     private void leaveServer(Server server) {
