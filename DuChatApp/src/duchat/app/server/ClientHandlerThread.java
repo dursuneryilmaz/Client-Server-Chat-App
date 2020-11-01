@@ -67,6 +67,8 @@ public class ClientHandlerThread implements Runnable {
                     messageService.saveMessage(clientPacket);
                     chatServer.broadcast(clientPacket, this);
                 } else {
+                    this.stop();
+                    chatServer.removeUser(this);
                     break;
                 }
             }
